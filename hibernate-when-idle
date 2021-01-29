@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 #
-# Check every 60 seconds to see if no meetings are running, and if not,
-# hibernate a list of AWS EC2 instances.
+# Check every 60 seconds to see if nobody is logged in and no meetings
+# are running, and if not, hibernate a list of AWS EC2 instances.
 
 import time
 import boto3
+import psutil
 
 from vnc_collaborate import bigbluebutton
 
@@ -23,6 +24,8 @@ def ec2():
 
 def is_server_idle():
     try:
+        if len(psutil.users()) > 0:
+            return False
         xml = bigbluebutton.getMeetings()
         return len(xml.xpath('.//meeting')) == 0
     except:
