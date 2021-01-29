@@ -17,6 +17,7 @@
 import os
 import jwt
 import requests
+import boto3
 
 CONF_FILE='/etc/bigbluebutton/bbb-auth-jwt'
 exec(open(CONF_FILE).read())
