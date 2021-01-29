@@ -29,7 +29,7 @@ ec2_handle = None
 def ec2():
     global ec2_handle
     if ec2_handle == None:
-        session = boto3.Session(region=AWS_REGION)
+        session = boto3.Session(region_name = AWS_REGION)
         ec2_handle = session.client('ec2')
     return ec2_handle
 
