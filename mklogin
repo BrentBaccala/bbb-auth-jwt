@@ -1,0 +1,36 @@
+#! /usr/bin/python3
+
+import sys
+import jwt
+import vnc_collaborate
+from vnc_collaborate import bigbluebutton
+from datetime import datetime
+import dateutil.parser
+import argparse
+
+
+parser = argparse.ArgumentParser(description='Start an Ubuntu node in GNS3')
+parser.add_argument('-e', '--expiration-time', type=str, required=True,
+                    help='expiration time of tokens')
+parser.add_argument('-m', '--moderator', action="store_true",
+                    help='generate moderator tokens')
+parser.add_argument('name')
+args = parser.parse_args()
+
+try:
+    exp = dateutil.parser.parse(args.expiration_time)
+except:
+    raise Exception("Can't parse expiration time")
+
+if args.moderator:
+    role = 'm'
+else:
+    role = 'v'
+
+message = {'sub' : args.name, 'role' : role, 'exp' : exp}
+
+print(message)
+
+JWT = jwt.encode(message, bigbluebutton.securitySalt())
+
+print('https://osito.freesoft.org/login.cgi/' + JWT.decode())
