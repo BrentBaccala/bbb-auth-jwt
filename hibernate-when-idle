@@ -1,0 +1,40 @@
+#!/usr/bin/python3
+#
+# Check every 60 seconds to see if no meetings are running, and if not,
+# hibernate a list of AWS EC2 instances.
+
+import time
+import boto3
+
+from vnc_collaborate import bigbluebutton
+
+AWS_REGION = 'us-east-2'
+REMOTE_INSTANCE_LIST_STOP = ["i-046861ce5d597be6b", "i-0e997d8963457c7fa"]
+REMOTE_INSTANCE_LIST_HIBERNATE = ["i-08f39feb40bc52bd7"]
+
+ec2_handle = None
+
+def ec2():
+    global ec2_handle
+    if ec2_handle == None:
+        session = boto3.Session(region_name = AWS_REGION)
+        ec2_handle = session.client('ec2')
+    return ec2_handle
+
+def is_server_idle():
+    try:
+        xml = bigbluebutton.getMeetings()
+        return len(xml.xpath('.//meeting')) == 0
+    except:
+        return False
+
+def main():
+    while True:
+        if is_server_idle():
+            print("Hibernating instances")
+            ec2().stop_instances(InstanceIds=REMOTE_INSTANCE_LIST_STOP)
+            ec2().stop_instances(InstanceIds=REMOTE_INSTANCE_LIST_HIBERNATE, Hibernate=True)
+        time.sleep(60)
+
+if __name__ == "__main__":
+    main()
