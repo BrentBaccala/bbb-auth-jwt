@@ -18,7 +18,8 @@ import os
 import jwt
 import requests
 
-load('/etc/bigbluebutton/bbb-auth-jwt')
+CONF_FILE='/etc/bigbluebutton/bbb-auth-jwt'
+exec(open(CONF_FILE).read())
 
 JWT = os.environ['PATH_INFO'][1:]
 
