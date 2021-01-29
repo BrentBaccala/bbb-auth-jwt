@@ -2,12 +2,14 @@
 
 import sys
 import jwt
+import socket
 import vnc_collaborate
 from vnc_collaborate import bigbluebutton
 from datetime import datetime
 import dateutil.parser
 import argparse
 
+LOGIN_URL = 'https://' + socket.getfqdn() + '/login.cgi/'
 
 parser = argparse.ArgumentParser(description='Start an Ubuntu node in GNS3')
 parser.add_argument('-e', '--expiration-time', type=str, required=True,
@@ -33,4 +35,4 @@ print(message)
 
 JWT = jwt.encode(message, bigbluebutton.securitySalt())
 
-print('https://osito.freesoft.org/login.cgi/' + JWT.decode())
+print(LOGIN_URL + JWT.decode())
