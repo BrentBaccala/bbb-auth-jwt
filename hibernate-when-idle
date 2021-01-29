@@ -6,6 +6,7 @@
 import time
 import boto3
 import psutil
+import datetime
 
 from vnc_collaborate import bigbluebutton
 
@@ -34,7 +35,7 @@ def is_server_idle():
 def main():
     while True:
         if is_server_idle():
-            print("Hibernating instances")
+            print("Hibernating instances at", datetime.datetime.now())
             ec2().stop_instances(InstanceIds=REMOTE_INSTANCE_LIST_STOP)
             ec2().stop_instances(InstanceIds=REMOTE_INSTANCE_LIST_HIBERNATE, Hibernate=True)
         time.sleep(60)
