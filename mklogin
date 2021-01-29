@@ -11,7 +11,7 @@ import argparse
 CONF_FILE='/etc/bigbluebutton/bbb-auth-jwt'
 
 if os.path.isfile(CONF_FILE):
-    load(CONF_FILE)
+    exec(open(CONF_FILE).read())
 else:
     import vnc_collaborate
     from vnc_collaborate import bigbluebutton
