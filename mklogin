@@ -1,13 +1,21 @@
 #! /usr/bin/python3
 
+import os
 import sys
 import jwt
 import socket
-import vnc_collaborate
-from vnc_collaborate import bigbluebutton
 from datetime import datetime
 import dateutil.parser
 import argparse
+
+CONF_FILE='/etc/bigbluebutton/bbb-auth-jwt'
+
+if os.path.isfile(CONF_FILE):
+    load(CONF_FILE)
+else:
+    import vnc_collaborate
+    from vnc_collaborate import bigbluebutton
+    JWT_KEY = bigbluebutton.securitySalt()
 
 LOGIN_URL = 'https://' + socket.getfqdn() + '/login.cgi/'
 
@@ -33,6 +41,6 @@ message = {'sub' : args.name, 'role' : role, 'exp' : exp}
 
 print(message)
 
-JWT = jwt.encode(message, bigbluebutton.securitySalt())
+JWT = jwt.encode(message, JWT_KEY)
 
 print(LOGIN_URL + JWT.decode())
