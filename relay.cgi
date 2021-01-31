@@ -42,7 +42,7 @@ def wait_for_remote():
         try:
             requests.get(REMOTE_CHECK_URL, timeout=TIMEOUT)
             break
-        except (requests.ConnectTimeout, requests.ConnectionError):
+        except (requests.ConnectTimeout, requests.ConnectionError, requests.ReadTimeout):
             pass
 
 def start_remote_if_needed():
