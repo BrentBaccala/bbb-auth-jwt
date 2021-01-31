@@ -8,8 +8,10 @@
 
 <script type="text/javascript">
 
-var pingUrl = "https://osito.freesoft.org/";
-var targetUrl = "https://osito.freesoft.org/";
+const urlParams = new URLSearchParams(window.location.search);
+const pingUrl = urlParams.get('pingUrl');
+const targetUrl = urlParams.get('targetUrl');
+
 setInterval(ping, 3000);
 
 function ping() {
