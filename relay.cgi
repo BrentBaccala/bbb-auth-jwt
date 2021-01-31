@@ -17,10 +17,14 @@
 import os
 import jwt
 import requests
+import socket
 import boto3
+import urllib
 
 CONF_FILE='/etc/bigbluebutton/bbb-auth-jwt'
 exec(open(CONF_FILE).read())
+
+WAIT_URL = 'https://' + socket.getfqdn() + '/wait.html'
 
 JWT = os.environ['PATH_INFO'][1:]
 
@@ -37,18 +41,8 @@ def is_remote_running():
     result = ec2().describe_instance_status(InstanceIds=[REMOTE_INSTANCE_LIST[0]], IncludeAllInstances=True)
     return result['InstanceStatuses'][0]['InstanceState']['Name'] == 'running'
 
-def wait_for_remote():
-    while True:
-        try:
-            requests.get(REMOTE_CHECK_URL, timeout=TIMEOUT)
-            break
-        except (requests.ConnectTimeout, requests.ConnectionError, requests.ReadTimeout):
-            pass
-
-def start_remote_if_needed():
-    if not is_remote_running():
-        ec2().start_instances(InstanceIds=REMOTE_INSTANCE_LIST)
-        wait_for_remote()
+def start_remote():
+    ec2().start_instances(InstanceIds=REMOTE_INSTANCE_LIST)
 
 try:
     jwt_options = {'require_exp' : True}
@@ -57,10 +51,14 @@ try:
                          options = jwt_options,
                          algorithms = jwt_algorithms)
 
-    start_remote_if_needed()
-
-    response = REMOTE_LOGIN_URL + JWT
+    if is_remote_running():
+        response = REMOTE_LOGIN_URL + JWT
+    else:
+        start_remote()
+        response = WAIT_URL + '?' + urllib.parse.urlencode({'pingUrl' : 'https://itpietraining.com/',
+                                                            'targetUrl' : REMOTE_LOGIN_URL + JWT})
     print(f"Location: {response}\n")
+
 
 except Exception as ex:
     print(f"""Content-type: text/html
