@@ -26,6 +26,7 @@ parser.add_argument('-e', '--expiration-time', type=str, required=True,
                     help='expiration time of tokens (defaults to midnight in local timezone if only date is given)')
 parser.add_argument('-m', '--moderator', action="store_true",
                     help='generate moderator tokens')
+parser.add_argument('-d', '--debug', action="store_true", help="print exact JWT being encoded")
 parser.add_argument('name')
 args = parser.parse_args()
 
@@ -43,9 +44,9 @@ else:
 
 message = {'sub' : args.name, 'role' : role, 'exp' : exp}
 
-print('Expiration time:', exp.strftime('%c %Z'))
-
-print(message)
+if args.debug:
+    print('Expiration time:', exp.strftime('%c %Z'))
+    print(message)
 
 JWT = jwt.encode(message, JWT_KEY)
 
