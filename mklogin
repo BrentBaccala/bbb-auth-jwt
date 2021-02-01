@@ -10,6 +10,8 @@ import argparse
 
 CONF_FILE='/etc/bigbluebutton/bbb-auth-jwt'
 
+local_timezone = datetime.now().astimezone().tzinfo
+
 if os.path.isfile(CONF_FILE):
     exec(open(CONF_FILE).read())
 else:
@@ -19,9 +21,9 @@ else:
 
 LOGIN_URL = 'https://' + socket.getfqdn() + '/login.cgi/'
 
-parser = argparse.ArgumentParser(description='Start an Ubuntu node in GNS3')
+parser = argparse.ArgumentParser(description='Generate login URL for a Big Blue Button server')
 parser.add_argument('-e', '--expiration-time', type=str, required=True,
-                    help='expiration time of tokens')
+                    help='expiration time of tokens (defaults to midnight in local timezone if only date is given)')
 parser.add_argument('-m', '--moderator', action="store_true",
                     help='generate moderator tokens')
 parser.add_argument('name')
@@ -29,6 +31,8 @@ args = parser.parse_args()
 
 try:
     exp = dateutil.parser.parse(args.expiration_time)
+    if exp.tzinfo is None:
+        exp = exp.replace(tzinfo = local_timezone)
 except:
     raise Exception("Can't parse expiration time")
 
@@ -38,6 +42,8 @@ else:
     role = 'v'
 
 message = {'sub' : args.name, 'role' : role, 'exp' : exp}
+
+print('Expiration time:', exp.strftime('%c %Z'))
 
 print(message)
 
