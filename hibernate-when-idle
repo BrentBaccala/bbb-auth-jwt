@@ -8,7 +8,7 @@ import boto3
 import psutil
 import datetime
 
-bigbluebutton
+import bigbluebutton
 
 AWS_REGION = 'us-east-2'
 REMOTE_INSTANCE_LIST_STOP = ["i-046861ce5d597be6b", "i-0e997d8963457c7fa"]
